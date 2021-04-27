@@ -294,4 +294,63 @@ public class UnioTest : MonoBehaviour
             client = null;
         }
     }
+
+    public void OnButtonClick(UnityEngine.UI.Button sender)
+    {
+        if (sender == null)
+            return;
+
+        if (client == null || !client.IsAlive)
+            return;
+
+        if (sender.name == "Connect")
+        {
+            Unio.ConnectionRequestData d = new Unio.ConnectionRequestData();
+            string s = JsonUtility.ToJson(d);
+            Debug.Log(s);
+            client.Send(s);
+
+        }
+
+        if (serialNumbers.Count == 0)
+            return;
+        int sn = serialNumbers.ToList()[0];
+
+        if (sender.name == "LED")
+        {
+            Unio.LedData l = new Unio.LedData(sn);
+            string s = JsonUtility.ToJson(l);
+            Debug.Log(s);
+            client.Send(s);
+        }
+        if (sender.name == "MotorRun")
+        {
+            Unio.MotorControlData md = new Unio.MotorControlData(sn, true, 100, true, 100);
+            string s = JsonUtility.ToJson(md);
+            Debug.Log(s);
+            client.Send(s);
+        }
+        if (sender.name == "MotorStop")
+        {
+            Unio.MotorControlData md = new Unio.MotorControlData(sn, true, 0, true, 0);
+            string s = JsonUtility.ToJson(md);
+            Debug.Log(s);
+            client.Send(s);
+
+        }
+        if (sender.name == "Posture")
+        {
+            Unio.PostureAngleRequestData md = new Unio.PostureAngleRequestData(sn);
+            string s = JsonUtility.ToJson(md);
+            Debug.Log(s);
+            client.Send(s);
+        }
+        if (sender.name == "Motion")
+        {
+            Unio.MotionSensorRequestData md = new Unio.MotionSensorRequestData(sn);
+            string s = JsonUtility.ToJson(md);
+            Debug.Log(s);
+            client.Send(s);
+        }
+    }
 }
