@@ -97,9 +97,9 @@ namespace Unio
             globalSeq++;
             this.seq = globalSeq;
             clientList.Add(this);
-            Console.WriteLine("Seq" + this.seq + " Login. (" + this.ID + ")");
+            // Console.WriteLine("Seq" + this.seq + " Login. (" + this.ID + ")");
 
-            string msg = "{\"UnioLink\":\"Connected\"}";
+            string msg = "{\"unio\":\"connected\"}";
             Send(msg);
         }
 
@@ -140,7 +140,7 @@ namespace Unio
 
         protected override void OnClose(CloseEventArgs e)
         {
-            string msg = "{\"UnioLink\":\"Close\"}";
+            string msg = "{\"unio\":\"close\"}";
             Send(msg);
         }
 

@@ -35,7 +35,7 @@ namespace Unio
         private GattCharacteristic CharacteristicMotionOrMagneticSensorInformation = null;
         private GattCharacteristic CharacteristicButtonInformation = null;
         private GattCharacteristic CharacteristicBatteryInformation = null;
-        // Control
+        //// Control
         private GattCharacteristic CharacteristicMotorControl = null;
         private GattCharacteristic CharacteristicLightControl = null; // TODO
         private GattCharacteristic CharacteristicSoundControl = null; // TODO
