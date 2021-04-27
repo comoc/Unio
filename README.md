@@ -26,6 +26,11 @@ OR
 7. Press the Connect button
 8. And so on.
 
+## toio communication specification
+
+For more information about Characteristic UUID and data format used for communication with toio, please refer to this official page.
+https://toio.github.io/toio-spec/docs/ble_communication_overview.html
+
 ## Note
 
 UnioForUnity is including a binary of [websocket-sharp](https://github.com/sta/websocket-sharp).
