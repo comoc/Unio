@@ -50,11 +50,10 @@ namespace Unio
                     {
                         cancellationToken.ThrowIfCancellationRequested();
                     }
-                    
-                    //{ Do something
 
-
-                    //}
+                    Console.WriteLine("Press any key to exit");
+                    Console.ReadKey();
+                    cancellationTokenSource.Cancel();
 
                     Task.Yield();
                 }
@@ -65,10 +64,6 @@ namespace Unio
 
             }, cancellationTokenSource.Token);
 
-
-            Console.WriteLine("Press any key to exit");
-            Console.ReadKey();
-            cancellationTokenSource.Cancel();
 
             try
             {
@@ -101,17 +96,25 @@ namespace Unio
 
             string msg = "{\"unio\":\"connected\"}";
             Send(msg);
+
+            for (int i = 0; i < Unio.ToioManager.Instance.GetToioCount(); i++)
+            {
+                Toio toio = Unio.ToioManager.Instance.GetToio(i);
+                NetData nd = new NetData();
+                nd.serial = toio.SerialNumber;
+                string json = JsonConvert.SerializeObject(nd);
+                Sessions.Broadcast(json);
+            }
         }
 
         protected override void OnMessage(MessageEventArgs e)
         {
-            string messageString = e.Data;
-            Console.WriteLine("messageString : " + messageString);
-            if (messageString.Length > 0 && messageString[0] == '{')
+            Console.WriteLine("Message from client: " + e.Data);
+            if (e.Data.Length > 0 && e.Data[0] == '{')
             {
                 try
                 {
-                    Unio.NetData netData = JsonConvert.DeserializeObject<Unio.NetData>(messageString);
+                    Unio.NetData netData = JsonConvert.DeserializeObject<Unio.NetData>(e.Data);
                     if (netData != null)
                     {
                         if (netData.uuid == "" && (netData.data == null || netData.data.Length == 0)) // Connect
@@ -125,7 +128,8 @@ namespace Unio
                             for (int i = 0; i < Unio.ToioManager.Instance.GetToioCount(); i++)
                             {
                                 Unio.Toio toio = Unio.ToioManager.Instance.GetToio(i);
-                                toio.Write(data.uuid, data.data);
+                                if (toio.SerialNumber == data.serial)
+                                    toio.Write(data.uuid, data.data);
                             }
                             Console.WriteLine(data.uuid);
                         }
@@ -150,7 +154,9 @@ namespace Unio
             //SetText(msg);
             Console.WriteLine(msg);
 
-            string json = "{\"serial\":" + toio.SerialNumber + "}";
+            NetData nd = new NetData();
+            nd.serial = toio.SerialNumber;
+            string json = JsonConvert.SerializeObject(nd);
             Sessions.Broadcast(json);
 
             toio.onValueChanged += OnValueChanged;

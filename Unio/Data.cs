@@ -11,6 +11,12 @@ namespace Unio
         public int serial;
         public string uuid;
         public int[] data;
+        public NetData()
+        {
+            serial = 0;
+            uuid = "";
+            data = new int[0];
+        }
     }
 
     public class Data
@@ -18,6 +24,12 @@ namespace Unio
         public int serial;
         public string uuid;
         public byte[] data;
+        public Data()
+        {
+            serial = 0;
+            uuid = "";
+            data = new byte[0];
+        }
     }
 
     public class DataConverter

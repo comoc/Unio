@@ -1,6 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using WebSocketSharp;
 using WebSocketSharp.Net;
@@ -12,6 +12,12 @@ namespace Unio
         public int serial;
         public string uuid;
         public int[] data;
+        public NetData()
+        {
+            serial = 0;
+            uuid = "";
+            data = new int[0];
+        }
     }
 
     public class Data
@@ -19,7 +25,14 @@ namespace Unio
         public int serial;
         public string uuid;
         public byte[] data;
+        public Data()
+        {
+            serial = 0;
+            uuid = "";
+            data = new byte[0];
+        }
     }
+
 
     public class DataConverter
     {
@@ -67,6 +80,7 @@ namespace Unio
     {
         public connectionRequestData()
         {
+            serial = 0;
             uuid = "";
             data = null;
         }
@@ -151,7 +165,7 @@ public class UnioTest : MonoBehaviour
     [SerializeField] int webSocketServerPort = 12345;
     WebSocket client;
 
-    int serialNumber = 0;
+    HashSet<int> serialNumbers = new HashSet<int>();
 
     private Quaternion localRotation;
     void Start ()
@@ -161,10 +175,16 @@ public class UnioTest : MonoBehaviour
         string serverUrl = "ws://" + webSocketServerAddress + ":" + webSocketServerPort + "/";
         client = new WebSocket(serverUrl);
         client.OnMessage += (sender, e) => {
-            Debug.Log(e.Data);
+
+            Debug.Log("OnMessage: " + e.Data);
+
             Unio.NetData nd = JsonUtility.FromJson<Unio.NetData>(e.Data);
+
+            if (nd.serial == 0)
+                return;
+            serialNumbers.Add(nd.serial);
+
             Unio.Data d = Unio.DataConverter.TryConvert(nd);
-            serialNumber = nd.serial;
 
             if (nd.uuid == Unio.postureAngleRequestData.Uuid) // Posture
             {
@@ -203,49 +223,60 @@ public class UnioTest : MonoBehaviour
 
         if (client == null || !client.IsAlive)
             return;
-        if (Input.GetKeyDown(KeyCode.C))
+
+        if (Input.GetKeyDown(KeyCode.C)) // Connect
         {
             Unio.connectionRequestData d = new Unio.connectionRequestData();
-            d.serial = serialNumber;
             string s = JsonUtility.ToJson(d);
+            Debug.Log(s);
             client.Send(s);
         }
 
-        if (Input.GetKeyDown(KeyCode.G))
+        if (serialNumbers.Count == 0)
+            return;
+        int sn = serialNumbers.ToList()[0];
+
+        if (Input.GetKeyDown(KeyCode.G)) // Go forward
         {
             Unio.motorControlData md = new Unio.motorControlData(true, 100, true, 100);
-            md.serial = serialNumber;
+            md.serial = sn;
             string s = JsonUtility.ToJson(md);
+            Debug.Log(s);
             client.Send(s);
         }
-        if (Input.GetKeyUp(KeyCode.G))
+        else if (Input.GetKeyUp(KeyCode.G)) // Stop
         {
             Unio.motorControlData md = new Unio.motorControlData(true, 0, true, 0);
-            md.serial = serialNumber;
+            md.serial = sn;
             string s = JsonUtility.ToJson(md);
+            Debug.Log(s);
             client.Send(s);
         }
-        if (Input.GetKey(KeyCode.P))
+
+        if (Input.GetKey(KeyCode.P)) // Posture angle request
         {
             Unio.postureAngleRequestData md = new Unio.postureAngleRequestData();
-            md.serial = serialNumber;
+            md.serial = sn;
             string s = JsonUtility.ToJson(md);
+            Debug.Log(s);
             client.Send(s);
         }
 
-        if (Input.GetKeyDown(KeyCode.M))
+        if (Input.GetKeyDown(KeyCode.M)) // Motion sensor request
         {
             Unio.motionSensorRequestData md = new Unio.motionSensorRequestData();
-            md.serial = serialNumber;
+            md.serial = sn;
             string s = JsonUtility.ToJson(md);
+            Debug.Log(s);
             client.Send(s);
         }
 
-        if (Input.GetKeyDown(KeyCode.L))
+        if (Input.GetKeyDown(KeyCode.L)) // LED control
         {
             Unio.ledData l = new Unio.ledData();
-            l.serial = serialNumber;
+            l.serial = sn;
             string s = JsonUtility.ToJson(l);
+            Debug.Log(s);
             client.Send(s);
         }
         else if (Input.GetKeyUp(KeyCode.L))

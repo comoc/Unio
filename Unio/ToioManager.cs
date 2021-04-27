@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Bluetooth.Advertisement;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
+using Windows.Storage.Streams;
 
 // https://toio.github.io/toio-spec/docs/ble_communication_overview.html
 // https://docs.microsoft.com/ja-jp/windows/uwp/devices-sensors/gatt-client
@@ -54,9 +55,34 @@ namespace Unio
 
         private void Watcher_Received(BluetoothLEAdvertisementWatcher sender, BluetoothLEAdvertisementReceivedEventArgs args)
         {
+            BluetoothLEAdvertisementFlags? flags = args.Advertisement.Flags;
+
+            Console.WriteLine($"BluetoothAddress: {args.BluetoothAddress}, LocalName: {args.Advertisement.LocalName}");
+
+            string c = args.Advertisement.LocalName;
+
             lock (lockObj)
             {
-                if (toioList.Count(t => t.Address == args.BluetoothAddress) > 0)
+                //IList<BluetoothLEAdvertisementDataSection> dataSections = args.Advertisement.DataSections;
+                //foreach (BluetoothLEAdvertisementDataSection dataSection in dataSections)
+                //{
+
+                //    using (DataReader reader = DataReader.FromBuffer(dataSection.Data))
+                //    {
+                //        if (dataSection.DataType == 0x09)
+                //        {
+                //            string s = "";
+                //            for (int i = 0; i < buffer.Length; i++)
+                //            {
+                //                s += (char)buffer[i];
+                //            }
+                //            Console.WriteLine(s);
+                //        }
+                //    }
+                //}
+
+
+                if (toioList.Count(t => (t.Address == args.BluetoothAddress && t.LocalName == args.Advertisement.LocalName)) > 0)
                 {
                     return;
                 }
@@ -77,7 +103,7 @@ namespace Unio
                         {
                             var service = result.Services[0];
 
-                            Toio toio = new Toio(args.BluetoothAddress, service);
+                            Toio toio = new Toio(args.BluetoothAddress, args.Advertisement.LocalName, service);
 
                             // Test
                             byte battery = toio.ReadBatteryLife();

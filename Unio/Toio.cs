@@ -27,6 +27,7 @@ namespace Unio
 
         public int SerialNumber { private set; get; }
         public ulong Address { private set; get; }
+        public string LocalName { private set; get; }
 
         // Service
         private GattDeviceService Service = null;
@@ -61,12 +62,13 @@ namespace Unio
         public byte SoundEffectID;
         public byte SoundVolume;
 
-        public Toio(ulong address, GattDeviceService service)
+        public Toio(ulong address, string localName, GattDeviceService service)
         {
             SerialNumber = serialNumberCounter;
             serialNumberCounter++;
 
             Address = address;
+            LocalName = localName;
             Service = service;
 
             // Initialize required characteristics
