@@ -76,10 +76,11 @@ namespace Unio
         }
     }
 
-    public class connectionRequestData : Data
+    public class ConnectionRequestData : Data
     {
-        public connectionRequestData()
+        public ConnectionRequestData()
         {
+            // Special meaning
             serial = 0;
             uuid = "";
             data = null;
@@ -87,17 +88,18 @@ namespace Unio
     }
 
     //
-    public class postureAngleRequestData : Data
+    public class PostureAngleRequestData : Data
     {
         public static readonly string Uuid = "10B20106-5B3B-4571-9508-CF3EFCD7BBAE";
-        public postureAngleRequestData()
+        public PostureAngleRequestData(int serialNumber)
         {
+            serial = serialNumber;
             uuid = Uuid;
             data = new byte[2] {0x83, 0x02};
         }
     }
 
-    public class motorControlData : Data
+    public class MotorControlData : Data
     {
         public static readonly string Uuid = "10B20102-5B3B-4571-9508-CF3EFCD7BBAE";
         public static readonly int DataLength = 7;
@@ -106,13 +108,15 @@ namespace Unio
         public static readonly byte LeftId = 0x01;
         public static readonly byte RightId = 0x02;
 
-        public motorControlData()
+        public MotorControlData(int serialNumber)
         {
+            serial = serialNumber;
             uuid = Uuid;
         }
 
-        public motorControlData(bool isLeftForward, byte leftSpeed, bool isRightForward, byte rightSpeed)
+        public MotorControlData(int serialNumber, bool isLeftForward, byte leftSpeed, bool isRightForward, byte rightSpeed)
         {
+            serial = serialNumber;
             uuid = Uuid;
             data = new byte[7] {Type,
                 LeftId, (byte)(isLeftForward ? 0x01 : 0x02), leftSpeed,
@@ -120,12 +124,13 @@ namespace Unio
         }
     }
 
-    public class motionSensorRequestData : Data
+    public class MotionSensorRequestData : Data
     {
         public static readonly  string Uuid = "10B20106-5B3B-4571-9508-CF3EFCD7BBAE";
 
-        public motionSensorRequestData()
+        public MotionSensorRequestData(int serialNumber)
         {
+            serial = serialNumber;
             uuid = Uuid;
             data = new byte[1] { 0x81 };
         }
@@ -133,12 +138,13 @@ namespace Unio
 
 
 
-    public class ledData : Data
+    public class LedData : Data
     {
         public static readonly  string Uuid = "10B20103-5B3B-4571-9508-CF3EFCD7BBAE";
 
-        public ledData()
+        public LedData(int serialNumber)
         {
+            serial = serialNumber;
             uuid = Uuid;
             // data = new byte[1] { 0x81 };
 
@@ -186,7 +192,7 @@ public class UnioTest : MonoBehaviour
 
             Unio.Data d = Unio.DataConverter.TryConvert(nd);
 
-            if (nd.uuid == Unio.postureAngleRequestData.Uuid) // Posture
+            if (nd.uuid == Unio.PostureAngleRequestData.Uuid) // Posture
             {
                 int w = BitConverter.ToInt16(d.data, 2);
                 int x = BitConverter.ToInt16(d.data, 4);
@@ -226,7 +232,7 @@ public class UnioTest : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.C)) // Connect
         {
-            Unio.connectionRequestData d = new Unio.connectionRequestData();
+            Unio.ConnectionRequestData d = new Unio.ConnectionRequestData();
             string s = JsonUtility.ToJson(d);
             Debug.Log(s);
             client.Send(s);
@@ -238,16 +244,14 @@ public class UnioTest : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.G)) // Go forward
         {
-            Unio.motorControlData md = new Unio.motorControlData(true, 100, true, 100);
-            md.serial = sn;
+            Unio.MotorControlData md = new Unio.MotorControlData(sn, true, 100, true, 100);
             string s = JsonUtility.ToJson(md);
             Debug.Log(s);
             client.Send(s);
         }
         else if (Input.GetKeyUp(KeyCode.G)) // Stop
         {
-            Unio.motorControlData md = new Unio.motorControlData(true, 0, true, 0);
-            md.serial = sn;
+            Unio.MotorControlData md = new Unio.MotorControlData(sn, true, 0, true, 0);
             string s = JsonUtility.ToJson(md);
             Debug.Log(s);
             client.Send(s);
@@ -255,8 +259,7 @@ public class UnioTest : MonoBehaviour
 
         if (Input.GetKey(KeyCode.P)) // Posture angle request
         {
-            Unio.postureAngleRequestData md = new Unio.postureAngleRequestData();
-            md.serial = sn;
+            Unio.PostureAngleRequestData md = new Unio.PostureAngleRequestData(sn);
             string s = JsonUtility.ToJson(md);
             Debug.Log(s);
             client.Send(s);
@@ -264,8 +267,7 @@ public class UnioTest : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.M)) // Motion sensor request
         {
-            Unio.motionSensorRequestData md = new Unio.motionSensorRequestData();
-            md.serial = sn;
+            Unio.MotionSensorRequestData md = new Unio.MotionSensorRequestData(sn);
             string s = JsonUtility.ToJson(md);
             Debug.Log(s);
             client.Send(s);
@@ -273,8 +275,7 @@ public class UnioTest : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.L)) // LED control
         {
-            Unio.ledData l = new Unio.ledData();
-            l.serial = sn;
+            Unio.LedData l = new Unio.LedData(sn);
             string s = JsonUtility.ToJson(l);
             Debug.Log(s);
             client.Send(s);
