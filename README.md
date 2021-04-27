@@ -1,6 +1,6 @@
 # Unio
 
-BLE - WebSocket gateway for toio and other apps (e.g. Unity) on Windows.
+BLE-WebSocket gateway for [toio](https://toio.io/) and other apps (e.g. Unity) on Windows.
 
 **The current communication protocol is provisional. It is subject to change in the near future.**
 
@@ -21,7 +21,7 @@ BLE - WebSocket gateway for toio and other apps (e.g. Unity) on Windows.
 8. Press G key to go forward.
    See `UnioTest\Scripts\UnioTest.cs` for other operations.
 
-OR
+  OR
 
 7. Press the Connect button
 8. And so on.
