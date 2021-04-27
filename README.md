@@ -20,7 +20,9 @@ BLE - WebSocket gateway for toio and other apps (e.g. Unity) on Windows.
 7. Focus on Unity's Game Window and press the C key to connect.
 8. Press G key to go forward.
    See `UnioTest\Scripts\UnioTest.cs` for other operations.
+
 OR
+
 7. Press the Connect button
 8. And so on.
 
