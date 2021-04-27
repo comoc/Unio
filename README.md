@@ -26,6 +26,22 @@ BLE-WebSocket gateway for [toio](https://toio.io/) and other apps (e.g. Unity) o
 7. Press the Connect button
 8. And so on.
 
+## Data basics
+
+Data between Unio and the client is represented in JSON format like the following.
+```
+{"serial":NUMBER, "uuid":"UUID", "data":ByteArray}
+```
+Here,
+* Number: Integer value. NUMBER >= 1. Unio will generate a corresponding serial number for each toio.
+* UUID: UUID corresponding to the toio characteristic.
+* BYTE_ARRAY: Array of byte values.
+
+The following data sent from the client to Unio represents a request to start a connection toio.
+```
+{"serial":0, "uuid":"", "data":[]}
+```
+
 ## toio communication specification
 
 For more information about Characteristic UUID and data format used for communication with toio, please refer to this official page.
