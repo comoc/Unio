@@ -17,14 +17,9 @@ BLE-WebSocket gateway for [toio](https://toio.io/) and other apps (e.g. Unity) o
 4. Open `UnioTest\Scenes\SampleScene`.
 5. Play it.
 6. Turn on the toio.
-7. Focus on Unity's Game Window and press the C key to connect.
-8. Press G key to go forward.
-   See `UnioTest\Scripts\UnioTest.cs` for other operations.
-
-  OR
-
-7. Press the Connect button
-8. And so on.
+7. Focus on Unity's Game Window and press `Connect` button to connect.
+8. Press `Motor Run` button to go forward.
+9. And so on.
 
 ## Data basics
 
